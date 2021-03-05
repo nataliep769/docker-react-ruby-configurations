@@ -11,10 +11,8 @@ services:
       POSTGRES_PASSWORD: password
   backend:
     build: ../RubyMineProjects/ruby-trial-project
-    container_name: ruby-project-container
+    container_name: ruby-container
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3001 -b '0.0.0.0'"
-    #  volumes:
-    #   - .:/myapp
     ports:
       - "3001:3001"
     networks:
@@ -22,16 +20,13 @@ services:
     depends_on:
       - db
   client:
-    container_name: react-project-container
+    container_name: react-container
     environment:
       CHOKIDAR_USEPOLLING: "true" # note that this ups the CPU usage
     build:
       context: ../react-docker-app
     networks:
       - specialnetwork
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
     ports:
       - 3000:3000
 volumes:
