@@ -4,14 +4,17 @@ services:
     image: postgres
     volumes:
       - data-postgresql:/var/lib/postgresql
+    networks:
+      - specialnetwork # HUZZAH!! Explicitly putting this on the same network made things work. Got rid of "PG-CONNECTION BAD error"
     environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_PASSWORD: password
   backend:
     build: ../RubyMineProjects/ruby-trial-project
     container_name: ruby-project-container
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3001 -b '0.0.0.0'"
-    volumes:
-      - .:/myapp
+    #  volumes:
+    #   - .:/myapp
     ports:
       - "3001:3001"
     networks:
@@ -24,12 +27,11 @@ services:
       CHOKIDAR_USEPOLLING: "true" # note that this ups the CPU usage
     build:
       context: ../react-docker-app
-      dockerfile: Dockerfile
     networks:
       - specialnetwork
-    volumes:
-      - '.:/app'
-      - '/app/node_modules'
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
     ports:
       - 3000:3000
 volumes:
